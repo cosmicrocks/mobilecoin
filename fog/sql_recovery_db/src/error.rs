@@ -39,6 +39,9 @@ pub enum Error {
     /// Overlapping missed block range: {0:?} overlaps with {0:?}
     OverlappingMissedBlocksRange(BlockRange, BlockRange),
 
+    /// The current IngressKeys that are in use could not be computed properly.
+    IngressKeyInUseViolation(String),
+
     /**
      * The data in the database could not be decoded as a
      * VerificationReport: {0:?}
