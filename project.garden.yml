@@ -1,0 +1,45 @@
+# Indicate what kind of config this is.
+kind: Project
+
+# The name of the project.
+name: mobilecoin
+
+# A list of environments to configure for the project.
+environments:
+  - # The name of the environment.
+    name: remote-kubernetes
+    defaultNamespace: ${local.env.CIRCLE_BUILD_NUM || local.username}
+
+providers:
+  - # The name of the provider plugin to use.
+    name: local-kubernetes
+    environments:
+      - remote-kubernetes
+    defaultHostname: ${environment.namespace}.dev-1.sys.garden
+
+    # https://docs.garden.io/advanced/cert-manager-integration#issuing-your-first-certificate
+    certManager:
+      install: true
+      email: certs@cosmic.rocks
+      issuer: acme
+      acmeChallengeType: HTTP-01
+      acmeServer: letsencrypt-prod
+
+variables: {}
+
+---
+kind: Workflow
+name: my-workflow
+envVars:
+  SGX_MODE: HW
+  IAS_MODE: DEV
+  NETWORK: cd
+steps:
+  - script: |
+      echo "Hello ${project.name}!"
+
+---
+kind: Module
+description: Image for the API backend for the mobilecoin
+type: container
+name: mobilecoin
